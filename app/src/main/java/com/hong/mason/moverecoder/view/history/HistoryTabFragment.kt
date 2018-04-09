@@ -17,6 +17,6 @@ class HistoryTabFragment : BaseTabFragment() {
     override fun initView(view: View) {
     }
 
-    override fun initArguments(args: Bundle) {
+    override fun initArguments(args: Bundle?) {
     }
 }

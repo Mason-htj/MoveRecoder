@@ -2,6 +2,9 @@ package com.hong.mason.moverecoder.view.history
 
 import android.os.Bundle
 import android.support.design.widget.TabLayout
+import android.support.v4.app.Fragment
+import android.support.v4.app.FragmentManager
+import android.support.v4.app.FragmentPagerAdapter
 import android.support.v4.view.PagerAdapter
 import android.support.v4.view.ViewPager
 import android.support.v7.app.AppCompatActivity
@@ -9,6 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.hong.mason.moverecoder.R
 import com.hong.mason.moverecoder.base.BaseTabFragment
+import com.hong.mason.moverecoder.view.history.category.CategoryTabFragment
 
 class HistoryActivity : AppCompatActivity() {
     private lateinit var viewPager: ViewPager
@@ -22,23 +26,19 @@ class HistoryActivity : AppCompatActivity() {
         tabLayout = findViewById(R.id.tab_layout)
 
         val tabList: ArrayList<BaseTabFragment> = ArrayList()
-        tabList.add(StatisticTabFragment())
+        tabList.add(CategoryTabFragment())
         tabList.add(HistoryTabFragment())
         viewPager.offscreenPageLimit = tabList.size
-        viewPager.adapter = ViewPagerAdapter(tabList)
+        viewPager.adapter = ViewPagerAdapter(supportFragmentManager, tabList)
         tabLayout.setupWithViewPager(viewPager)
     }
 
     class ViewPagerAdapter(
+            fragmentManager: FragmentManager,
             private val tabList: List<BaseTabFragment>
-    ) : PagerAdapter() {
-
-        override fun instantiateItem(container: ViewGroup?, position: Int): Any {
+    ) : FragmentPagerAdapter(fragmentManager) {
+        override fun getItem(position: Int): Fragment {
             return tabList[position]
-        }
-
-        override fun isViewFromObject(view: View?, `object`: Any?): Boolean {
-            return view == `object`
         }
 
         override fun getCount(): Int {
