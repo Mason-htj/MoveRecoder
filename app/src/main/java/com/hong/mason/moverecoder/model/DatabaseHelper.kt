@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteOpenHelper
 import android.content.ContentValues
 import com.hong.mason.moverecoder.data.Category
 import com.hong.mason.moverecoder.data.Record
+import com.hong.mason.moverecoder.view.history.category.CategoryHistory
 
 
 class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, CURRENT_VERSION) {
@@ -63,7 +64,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         writableDatabase.execSQL("DELETE FROM ${Records.TABLE_NAME}")
     }
 
-    fun getAllCategories() : List<Category> {
+    fun getAllCategories(): List<Category> {
         val projections = arrayOf(ID, Categories.NAME)
         val order = "${ID} DESC"
         val cursor = readableDatabase.query(Categories.TABLE_NAME, projections, null, null, null, null, order)
@@ -84,11 +85,28 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         return writableDatabase.insert(Categories.TABLE_NAME, null, values)
     }
 
+    fun getCategoryHistory(): List<CategoryHistory> {
+        val cursor = readableDatabase.rawQuery(QUERY_SELECT_CATEGORY_HISTORY, null)
+        val result = ArrayList<CategoryHistory>()
+        while (cursor.moveToNext()) {
+            val id = cursor.getLong(cursor.getColumnIndexOrThrow(ID))
+            val count = cursor.getInt(cursor.getColumnIndexOrThrow(COUNT))
+            val sum = cursor.getLong(cursor.getColumnIndexOrThrow(SUM))
+            val categoryName = cursor.getString(cursor.getColumnIndexOrThrow(Categories.NAME))
+            result.add(CategoryHistory(id, categoryName, sum, count, sum.toFloat() / count))
+        }
+        cursor.close()
+        return result
+    }
+
     companion object {
         const val DATABASE_NAME = "MoveRecoder"
         const val CURRENT_VERSION = 1
         const val ID = "id"
-        const val QUERY_SELECT_ALL_RECORDS = "SELECT * FROM ${Records.TABLE_NAME} LEFT JOIN ${Categories.TABLE_NAME} ON ${Records.TABLE_NAME}.${Records.CATEGORY} = ${Categories.TABLE_NAME}.${ID}"
+        const val COUNT = "count"
+        const val SUM = "sum"
+        const val QUERY_SELECT_ALL_RECORDS = "SELECT * FROM ${Records.TABLE_NAME} LEFT JOIN ${Categories.TABLE_NAME} ON ${Records.TABLE_NAME}.${Records.CATEGORY} = ${Categories.TABLE_NAME}.$ID"
+        const val QUERY_SELECT_CATEGORY_HISTORY = "SELECT ${Categories.TABLE_NAME}.$ID, ${Categories.NAME}, COUNT(${Records.TABLE_NAME}.$ID) as $COUNT, SUM(${Records.DURATION}) as $SUM FROM ${Records.TABLE_NAME} LEFT JOIN ${Categories.TABLE_NAME} ON ${Records.CATEGORY} = ${Categories.TABLE_NAME}.$ID GROUP BY ${Records.CATEGORY}"
     }
 
     class Records {
