@@ -12,6 +12,7 @@ import android.widget.Button
 import android.widget.TextView
 import com.hong.mason.moverecoder.model.DatabaseHelper
 import com.hong.mason.moverecoder.R
+import com.hong.mason.moverecoder.common.RequestCodes
 import com.hong.mason.moverecoder.data.Category
 import com.hong.mason.moverecoder.model.RecoderPref
 import com.hong.mason.moverecoder.service.MovingService
@@ -52,7 +53,7 @@ class MainActivity : AppCompatActivity(), CategorySelectDialog.OnSelectCategoryL
         }
         updateRecordList()
         val intent = Intent(this, MovingService::class.java)
-        intent.action = MovingService.ACTION_ARRIVE
+        intent.action = RequestCodes.ACTION_ARRIVE
     }
 
     override fun onBackPressed() {
@@ -96,7 +97,7 @@ class MainActivity : AppCompatActivity(), CategorySelectDialog.OnSelectCategoryL
         when(view.id) {
             R.id.button_start -> {
                 val intent = Intent(this, MovingService::class.java)
-                intent.action = MovingService.ACTION_START
+                intent.action = RequestCodes.ACTION_START
                 startService(intent)
                 val startTime = System.currentTimeMillis()
                 recoderPref.setStartTime(startTime)
@@ -116,7 +117,7 @@ class MainActivity : AppCompatActivity(), CategorySelectDialog.OnSelectCategoryL
                 recoderPref.setStartTime(0)
                 setStartedView(false)
                 val intent = Intent(this, MovingService::class.java)
-                intent.action = MovingService.ACTION_CANCEL
+                intent.action = RequestCodes.ACTION_CANCEL
                 startService(intent)
             }
         }
