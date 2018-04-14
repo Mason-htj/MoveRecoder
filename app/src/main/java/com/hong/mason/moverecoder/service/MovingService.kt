@@ -7,21 +7,43 @@ import android.content.Intent
 import android.support.v4.app.NotificationCompat
 import com.hong.mason.moverecoder.R
 import com.hong.mason.moverecoder.util.TimeFormatUtils
+import android.app.NotificationChannel
+import android.os.Build
 
-class MovingService(name: String) : IntentService(name) {
+
+
+class MovingService : IntentService("MovingService") {
+    private lateinit var notificationManager: NotificationManager
+
+    override fun onCreate() {
+        super.onCreate()
+        notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            // Create the NotificationChannel
+            val name = CHANNEL_MOVING
+            val description = ""
+            val importance = NotificationManager.IMPORTANCE_DEFAULT
+            val mChannel = NotificationChannel(CHANNEL_MOVING, name, importance)
+            mChannel.description = description
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            notificationManager.createNotificationChannel(mChannel)
+        }
+    }
+
     override fun onHandleIntent(intent: Intent?) {
-        val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         when (intent?.action) {
             ACTION_START -> {
                 val noti = NotificationCompat.Builder(baseContext, CHANNEL_MOVING)
                         .setSmallIcon(R.drawable.ic_moving_black_24dp)
                         .setContentTitle("You are moving")
-                        .setContentText(TimeFormatUtils.getDurationString(System.currentTimeMillis()))
+                        .setContentText(TimeFormatUtils.getDateString(System.currentTimeMillis()))
+                        .setOngoing(true)
                         .build()
-                manager.notify(ID_MOVING, noti)
+                notificationManager.notify(ID_MOVING, noti)
             }
             ACTION_ARRIVE, ACTION_CANCEL -> {
-                manager.cancel(ID_MOVING)
+                notificationManager.cancel(ID_MOVING)
             }
         }
     }

@@ -14,6 +14,7 @@ import com.hong.mason.moverecoder.model.DatabaseHelper
 import com.hong.mason.moverecoder.R
 import com.hong.mason.moverecoder.data.Category
 import com.hong.mason.moverecoder.model.RecoderPref
+import com.hong.mason.moverecoder.service.MovingService
 import com.hong.mason.moverecoder.view.history.HistoryActivity
 import java.text.DateFormat
 import java.util.*
@@ -50,6 +51,8 @@ class MainActivity : AppCompatActivity(), CategorySelectDialog.OnSelectCategoryL
             database.insertRecord(savedStartTime, savedArriveTime, id)
         }
         updateRecordList()
+        val intent = Intent(this, MovingService::class.java)
+        intent.action = MovingService.ACTION_ARRIVE
     }
 
     override fun onBackPressed() {
@@ -92,6 +95,9 @@ class MainActivity : AppCompatActivity(), CategorySelectDialog.OnSelectCategoryL
     private fun onClickControll(view: View) {
         when(view.id) {
             R.id.button_start -> {
+                val intent = Intent(this, MovingService::class.java)
+                intent.action = MovingService.ACTION_START
+                startService(intent)
                 val startTime = System.currentTimeMillis()
                 recoderPref.setStartTime(startTime)
                 setStartedView(true, startTime)
@@ -109,6 +115,9 @@ class MainActivity : AppCompatActivity(), CategorySelectDialog.OnSelectCategoryL
             R.id.button_cancel -> {
                 recoderPref.setStartTime(0)
                 setStartedView(false)
+                val intent = Intent(this, MovingService::class.java)
+                intent.action = MovingService.ACTION_CANCEL
+                startService(intent)
             }
         }
 

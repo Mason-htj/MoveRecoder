@@ -1,10 +1,15 @@
 package com.hong.mason.moverecoder.util
 
+import java.text.DateFormat
+import java.util.*
+
 class TimeFormatUtils {
     companion object {
         private const val ONE_SECOND = 1000L
         private const val ONE_MINUTE = ONE_SECOND * 60
         private const val ONE_HOUR = ONE_MINUTE * 60
+        private val formatter = DateFormat.getInstance()
+
         fun getDurationString(duration: Long): String {
             var value = duration
             val hour = value / ONE_HOUR
@@ -30,6 +35,10 @@ class TimeFormatUtils {
                 stringBuilder.append("$second 초")
             }
             return stringBuilder.toString()
+        }
+
+        fun getDateString(date: Long): String {
+            return formatter.format(Date(date))
         }
     }
 }
