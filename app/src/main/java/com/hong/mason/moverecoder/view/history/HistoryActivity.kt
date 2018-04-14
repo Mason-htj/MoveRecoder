@@ -5,11 +5,9 @@ import android.support.design.widget.TabLayout
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentPagerAdapter
-import android.support.v4.view.PagerAdapter
 import android.support.v4.view.ViewPager
 import android.support.v7.app.AppCompatActivity
-import android.view.View
-import android.view.ViewGroup
+import android.support.v7.widget.Toolbar
 import com.hong.mason.moverecoder.R
 import com.hong.mason.moverecoder.base.BaseTabFragment
 import com.hong.mason.moverecoder.view.history.category.CategoryTabFragment
@@ -25,9 +23,13 @@ class HistoryActivity : AppCompatActivity() {
         viewPager = findViewById(R.id.view_pager)
         tabLayout = findViewById(R.id.tab_layout)
 
+        val toolbar: Toolbar = findViewById(R.id.tool_bar)
+        toolbar.title = "History"
+        setSupportActionBar(toolbar)
+
         val tabList: ArrayList<BaseTabFragment> = ArrayList()
         tabList.add(CategoryTabFragment())
-        tabList.add(HistoryTabFragment())
+        tabList.add(RecordsTabFragment())
         viewPager.offscreenPageLimit = tabList.size
         viewPager.adapter = ViewPagerAdapter(supportFragmentManager, tabList)
         tabLayout.setupWithViewPager(viewPager)

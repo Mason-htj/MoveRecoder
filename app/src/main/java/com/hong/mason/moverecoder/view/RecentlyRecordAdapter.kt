@@ -7,7 +7,7 @@ import com.hong.mason.moverecoder.R
 import com.hong.mason.moverecoder.data.Record
 
 class RecentlyRecordAdapter(
-        private val items: List<Record>) : RecyclerView.Adapter<RecentlyRecordViewHolder>() {
+        private var items: List<Record>) : RecyclerView.Adapter<RecentlyRecordViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): RecentlyRecordViewHolder {
         return RecentlyRecordViewHolder(LayoutInflater.from(parent?.context).inflate(R.layout.viewholder_record, parent, false))
     }
@@ -18,5 +18,10 @@ class RecentlyRecordAdapter(
 
     override fun getItemCount(): Int {
         return items.size
+    }
+
+    fun changeItems(items: List<Record>) {
+        this.items = items
+        notifyDataSetChanged()
     }
 }
