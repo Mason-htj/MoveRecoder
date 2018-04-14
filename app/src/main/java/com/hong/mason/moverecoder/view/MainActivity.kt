@@ -23,7 +23,6 @@ class MainActivity : AppCompatActivity(), CategorySelectDialog.OnSelectCategoryL
     private lateinit var buttonWayPoint: Button
     private lateinit var buttonArrive: Button
     private lateinit var buttonCancel: Button
-    private lateinit var buttonClear: Button
     private lateinit var buttonMenu: View
     private lateinit var drawer: DrawerLayout
     private lateinit var textStartTime: TextView
@@ -69,7 +68,6 @@ class MainActivity : AppCompatActivity(), CategorySelectDialog.OnSelectCategoryL
         buttonWayPoint = findViewById(R.id.button_way_point)
         buttonArrive = findViewById(R.id.button_arrive)
         buttonCancel = findViewById(R.id.button_cancel)
-        buttonClear = findViewById(R.id.button_clear)
         buttonMenu = findViewById(R.id.button_menu)
         drawer = findViewById(R.id.drawer)
         textStartTime = findViewById(R.id.text_start_time)
@@ -81,10 +79,6 @@ class MainActivity : AppCompatActivity(), CategorySelectDialog.OnSelectCategoryL
         buttonWayPoint.setOnClickListener { onClickControll(it) }
         buttonArrive.setOnClickListener { onClickControll(it) }
         buttonCancel.setOnClickListener { onClickControll(it) }
-        buttonClear.setOnClickListener {
-            database.clearReocrds()
-            updateRecordList()
-        }
         initMenu()
 
         val startTime = recoderPref.getStartTime()
