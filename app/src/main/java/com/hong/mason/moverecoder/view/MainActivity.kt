@@ -12,7 +12,7 @@ import android.widget.Button
 import android.widget.TextView
 import com.hong.mason.moverecoder.model.DatabaseHelper
 import com.hong.mason.moverecoder.R
-import com.hong.mason.moverecoder.common.RequestCodes
+import com.hong.mason.moverecoder.common.ActionCodes
 import com.hong.mason.moverecoder.data.Category
 import com.hong.mason.moverecoder.model.RecoderPref
 import com.hong.mason.moverecoder.service.MovingService
@@ -42,6 +42,18 @@ class MainActivity : AppCompatActivity(), CategorySelectDialog.OnSelectCategoryL
         setContentView(R.layout.activity_main)
         initVariable()
         initView()
+
+        if (intent != null) {
+            handleIntent(intent)
+        }
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        if (intent != null) {
+            handleIntent(intent)
+        }
+
     }
 
     override fun onSelectCategory(category: Category) {
@@ -53,7 +65,7 @@ class MainActivity : AppCompatActivity(), CategorySelectDialog.OnSelectCategoryL
         }
         updateRecordList()
         val intent = Intent(this, MovingService::class.java)
-        intent.action = RequestCodes.ACTION_ARRIVE
+        intent.action = ActionCodes.ACTION_ARRIVE
     }
 
     override fun onBackPressed() {
@@ -94,31 +106,17 @@ class MainActivity : AppCompatActivity(), CategorySelectDialog.OnSelectCategoryL
     }
 
     private fun onClickControll(view: View) {
-        when(view.id) {
+        when (view.id) {
             R.id.button_start -> {
-                val intent = Intent(this, MovingService::class.java)
-                intent.action = RequestCodes.ACTION_START
-                startService(intent)
-                val startTime = System.currentTimeMillis()
-                recoderPref.setStartTime(startTime)
-                setStartedView(true, startTime)
+                startMoving()
             }
             R.id.button_way_point -> {
             }
             R.id.button_arrive -> {
-                setStartedView(false)
-                savedStartTime = recoderPref.getStartTime()
-                savedArriveTime = System.currentTimeMillis()
-                recoderPref.setStartTime(0)
-                CategorySelectDialog.newInstance()
-                        .show(supportFragmentManager, "")
+                arriveMoving()
             }
             R.id.button_cancel -> {
-                recoderPref.setStartTime(0)
-                setStartedView(false)
-                val intent = Intent(this, MovingService::class.java)
-                intent.action = RequestCodes.ACTION_CANCEL
-                startService(intent)
+                cancelMoving()
             }
         }
 
@@ -155,5 +153,45 @@ class MainActivity : AppCompatActivity(), CategorySelectDialog.OnSelectCategoryL
     private fun updateRecordList() {
         recyclerView.adapter = RecentlyRecordAdapter(database.getAllRecords())
         recyclerView.adapter.notifyDataSetChanged()
+    }
+
+    private fun startMoving() {
+        val startTime = System.currentTimeMillis()
+        recoderPref.setStartTime(startTime)
+        setStartedView(true, startTime)
+        notifyService(ActionCodes.ACTION_START)
+    }
+
+    private fun arriveMoving() {
+        setStartedView(false)
+        savedStartTime = recoderPref.getStartTime()
+        savedArriveTime = System.currentTimeMillis()
+        recoderPref.setStartTime(0)
+        CategorySelectDialog.newInstance()
+                .show(supportFragmentManager, "")
+        notifyService(ActionCodes.ACTION_ARRIVE)
+    }
+
+    private fun cancelMoving() {
+        recoderPref.setStartTime(0)
+        setStartedView(false)
+        notifyService(ActionCodes.ACTION_CANCEL)
+    }
+
+    private fun handleIntent(intent: Intent) {
+        when (intent.action) {
+            ActionCodes.ACTION_ARRIVE -> {
+                arriveMoving()
+            }
+            ActionCodes.ACTION_CANCEL -> {
+                cancelMoving()
+            }
+        }
+    }
+
+    private fun notifyService(action: String) {
+        val intent = Intent(this, MovingService::class.java)
+        intent.action = action
+        startService(intent)
     }
 }

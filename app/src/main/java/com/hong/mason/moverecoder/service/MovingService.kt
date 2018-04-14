@@ -10,7 +10,7 @@ import com.hong.mason.moverecoder.util.TimeFormatUtils
 import android.app.NotificationChannel
 import android.app.PendingIntent
 import android.os.Build
-import com.hong.mason.moverecoder.common.RequestCodes
+import com.hong.mason.moverecoder.common.ActionCodes
 import com.hong.mason.moverecoder.view.MainActivity
 
 
@@ -35,7 +35,7 @@ class MovingService : IntentService("MovingService") {
 
     override fun onHandleIntent(intent: Intent?) {
         when (intent?.action) {
-            RequestCodes.ACTION_START -> {
+            ActionCodes.ACTION_START -> {
                 val noti = NotificationCompat.Builder(baseContext, CHANNEL_MOVING)
                         .setSmallIcon(R.drawable.ic_moving_black_24dp)
                         .setContentTitle("You are moving")
@@ -47,7 +47,7 @@ class MovingService : IntentService("MovingService") {
                         .build()
                 notificationManager.notify(ID_MOVING, noti)
             }
-            RequestCodes.ACTION_ARRIVE, RequestCodes.ACTION_CANCEL -> {
+            ActionCodes.ACTION_ARRIVE, ActionCodes.ACTION_CANCEL -> {
                 notificationManager.cancel(ID_MOVING)
             }
         }
@@ -55,13 +55,15 @@ class MovingService : IntentService("MovingService") {
 
     private fun createArriveAction(): NotificationCompat.Action {
         val intent = Intent(this, MainActivity::class.java)
-        val pendingIntent = PendingIntent.getActivity(this, RequestCodes.MOVING_ARRIVE, intent, PendingIntent.FLAG_ONE_SHOT)
+        intent.action = ActionCodes.ACTION_ARRIVE
+        val pendingIntent = PendingIntent.getActivity(this, -1, intent, PendingIntent.FLAG_ONE_SHOT)
         return NotificationCompat.Action(R.drawable.ic_arrive_black_24dp, "Arrive", pendingIntent)
     }
 
     private fun createCancelAction(): NotificationCompat.Action {
         val intent = Intent(this, MainActivity::class.java)
-        val pendingIntent = PendingIntent.getActivity(this, RequestCodes.MOVING_CANCEL, intent, PendingIntent.FLAG_ONE_SHOT)
+        intent.action = ActionCodes.ACTION_CANCEL
+        val pendingIntent = PendingIntent.getActivity(this, -1, intent, PendingIntent.FLAG_ONE_SHOT)
         return NotificationCompat.Action(R.drawable.ic_arrive_black_24dp, "Cancel", pendingIntent)
     }
 
