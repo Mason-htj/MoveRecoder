@@ -1,8 +1,12 @@
 package com.hong.mason.moverecoder.view
 
+import android.content.ComponentName
+import android.content.Context
 import android.content.Intent
+import android.content.ServiceConnection
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.os.IBinder
 import android.support.v4.widget.DrawerLayout
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -20,7 +24,7 @@ import com.hong.mason.moverecoder.view.history.HistoryActivity
 import java.text.DateFormat
 import java.util.*
 
-class MainActivity : AppCompatActivity(), CategorySelectDialog.OnSelectCategoryListener {
+class MainActivity : AppCompatActivity(), CategorySelectDialog.OnSelectCategoryListener, MovingService.Callback {
     private lateinit var buttonStart: Button
     private lateinit var buttonWayPoint: Button
     private lateinit var buttonArrive: Button
@@ -30,6 +34,7 @@ class MainActivity : AppCompatActivity(), CategorySelectDialog.OnSelectCategoryL
     private lateinit var textStartTime: TextView
     private lateinit var recyclerView: RecyclerView
 
+    private var mBinder: MovingService.LocalBinder? = null
     private lateinit var database: DatabaseHelper
     private lateinit var recoderPref: RecoderPref
     private val formatter = DateFormat.getInstance()
@@ -46,6 +51,16 @@ class MainActivity : AppCompatActivity(), CategorySelectDialog.OnSelectCategoryL
         if (intent != null) {
             handleIntent(intent)
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        bindService(Intent(this, MovingService::class.java), mConnection, Context.BIND_AUTO_CREATE)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        unbindService(mConnection)
     }
 
     override fun onNewIntent(intent: Intent?) {
@@ -73,6 +88,27 @@ class MainActivity : AppCompatActivity(), CategorySelectDialog.OnSelectCategoryL
             drawer.closeDrawer(Gravity.START)
         } else {
             super.onBackPressed()
+        }
+    }
+
+    override fun onStarted(startTime: Long) {
+    }
+
+    override fun onArrived(startTime: Long) {
+    }
+
+    override fun onCanceled() {
+    }
+
+    private val mConnection = object : ServiceConnection {
+        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+            mBinder = service as MovingService.LocalBinder
+            mBinder?.registerCallback(this@MainActivity)
+        }
+
+        override fun onServiceDisconnected(name: ComponentName?) {
+            mBinder?.unRegisterCallback(this@MainActivity)
+            mBinder = null
         }
     }
 
@@ -159,7 +195,7 @@ class MainActivity : AppCompatActivity(), CategorySelectDialog.OnSelectCategoryL
         val startTime = System.currentTimeMillis()
         recoderPref.setStartTime(startTime)
         setStartedView(true, startTime)
-        notifyService(ActionCodes.ACTION_START)
+        mBinder?.startMoving()
     }
 
     private fun arriveMoving() {
@@ -169,13 +205,13 @@ class MainActivity : AppCompatActivity(), CategorySelectDialog.OnSelectCategoryL
         recoderPref.setStartTime(0)
         CategorySelectDialog.newInstance()
                 .show(supportFragmentManager, "")
-        notifyService(ActionCodes.ACTION_ARRIVE)
+        mBinder?.arriveMoving()
     }
 
     private fun cancelMoving() {
         recoderPref.setStartTime(0)
         setStartedView(false)
-        notifyService(ActionCodes.ACTION_CANCEL)
+        mBinder?.cancelMoving()
     }
 
     private fun handleIntent(intent: Intent) {
@@ -187,11 +223,5 @@ class MainActivity : AppCompatActivity(), CategorySelectDialog.OnSelectCategoryL
                 cancelMoving()
             }
         }
-    }
-
-    private fun notifyService(action: String) {
-        val intent = Intent(this, MovingService::class.java)
-        intent.action = action
-        startService(intent)
     }
 }

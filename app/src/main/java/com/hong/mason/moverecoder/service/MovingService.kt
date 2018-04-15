@@ -1,20 +1,20 @@
 package com.hong.mason.moverecoder.service
 
-import android.app.IntentService
-import android.app.NotificationManager
+import android.app.*
 import android.content.Context
 import android.content.Intent
+import android.os.Binder
 import android.support.v4.app.NotificationCompat
 import com.hong.mason.moverecoder.R
 import com.hong.mason.moverecoder.util.TimeFormatUtils
-import android.app.NotificationChannel
-import android.app.PendingIntent
 import android.os.Build
 import com.hong.mason.moverecoder.common.ActionCodes
 import com.hong.mason.moverecoder.view.MainActivity
 
 
-class MovingService : IntentService("MovingService") {
+class MovingService : Service() {
+    private val binder = LocalBinder()
+    private val mCallbacks: ArrayList<Callback> = ArrayList()
     private lateinit var notificationManager: NotificationManager
 
     override fun onCreate() {
@@ -33,24 +33,45 @@ class MovingService : IntentService("MovingService") {
         }
     }
 
-    override fun onHandleIntent(intent: Intent?) {
-        when (intent?.action) {
-            ActionCodes.ACTION_START -> {
-                val noti = NotificationCompat.Builder(baseContext, CHANNEL_MOVING)
-                        .setSmallIcon(R.drawable.ic_moving_black_24dp)
-                        .setContentTitle("You are moving")
-                        .setContentText(TimeFormatUtils.getDateString(System.currentTimeMillis()))
-                        .setOngoing(true)
-                        .setContentIntent(createAppPendingIntent())
-                        .addAction(createArriveAction())
-                        .addAction(createCancelAction())
-                        .build()
-                notificationManager.notify(ID_MOVING, noti)
-            }
-            ActionCodes.ACTION_ARRIVE, ActionCodes.ACTION_CANCEL -> {
-                notificationManager.cancel(ID_MOVING)
-            }
+    override fun onBind(intent: Intent?): Binder {
+        return binder
+    }
+
+    inner class LocalBinder : Binder() {
+        fun registerCallback(callback: Callback) {
+            mCallbacks.add(callback)
         }
+
+        fun unRegisterCallback(callback: Callback) {
+            mCallbacks.remove(callback)
+        }
+
+        fun startMoving() {
+            val noti = NotificationCompat.Builder(baseContext, CHANNEL_MOVING)
+                    .setSmallIcon(R.drawable.ic_moving_black_24dp)
+                    .setContentTitle("You are moving")
+                    .setContentText(TimeFormatUtils.getDateString(System.currentTimeMillis()))
+                    .setOngoing(true)
+                    .setContentIntent(createAppPendingIntent())
+                    .addAction(createArriveAction())
+                    .addAction(createCancelAction())
+                    .build()
+            notificationManager.notify(ID_MOVING, noti)
+        }
+
+        fun arriveMoving() {
+            notificationManager.cancel(ID_MOVING)
+        }
+
+        fun cancelMoving() {
+            notificationManager.cancel(ID_MOVING)
+        }
+    }
+
+    interface Callback {
+        fun onStarted(startTime: Long)
+        fun onArrived(startTime: Long)
+        fun onCanceled()
     }
 
     private fun createArriveAction(): NotificationCompat.Action {
