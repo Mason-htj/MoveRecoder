@@ -33,7 +33,7 @@ class RecordsTabFragment : BaseTabFragment() {
     }
 
     override fun initView(view: View) {
-        adapter = RecentlyRecordAdapter(recordDao.getAll())
+        adapter = RecentlyRecordAdapter(recordDao.getAllWithCategory())
         recyclerView = view.findViewById(R.id.recycler_view)
         recyclerView.setHasFixedSize(true)
         recyclerView.layoutManager = LinearLayoutManager(context)

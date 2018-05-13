@@ -1,4 +1,4 @@
-package com.hong.mason.moverecoder.data
+package com.hong.mason.moverecoder.room.model
 
 import android.arch.persistence.room.Entity
 import android.arch.persistence.room.PrimaryKey

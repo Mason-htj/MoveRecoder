@@ -13,9 +13,9 @@ class CategoryHistoryViewHolder(itemView: View) : RecyclerView.ViewHolder(itemVi
     private val textAverageTime: TextView = itemView.findViewById(R.id.text_average_time)
 
     fun bind(item: CategoryHistory) {
-        textName.text = item.name
+        textName.text = item.category?.name
         textTotalTime.text = TimeFormatUtils.getDurationString(item.totalTime)
         textTotalCount.text = "${item.totalCount} 회"
-        textAverageTime.text = TimeFormatUtils.getDurationString(item.averageTime.toLong())
+        textAverageTime.text = TimeFormatUtils.getDurationString(item.totalTime / item.totalCount)
     }
 }

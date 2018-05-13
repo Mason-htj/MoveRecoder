@@ -37,6 +37,8 @@ class TimeFormatUtils {
             return stringBuilder.toString()
         }
 
+        fun getDurationString(duration: Int): String = getDurationString(duration.toLong())
+
         fun getDateString(date: Long): String {
             return formatter.format(Date(date))
         }

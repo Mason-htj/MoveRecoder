@@ -4,10 +4,10 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.hong.mason.moverecoder.R
-import com.hong.mason.moverecoder.data.Record
+import com.hong.mason.moverecoder.room.model.RecordWithCategory
 
 class RecentlyRecordAdapter(
-        private var items: List<Record>) : RecyclerView.Adapter<RecentlyRecordViewHolder>() {
+        private var items: List<RecordWithCategory>) : RecyclerView.Adapter<RecentlyRecordViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): RecentlyRecordViewHolder {
         return RecentlyRecordViewHolder(LayoutInflater.from(parent?.context).inflate(R.layout.viewholder_record, parent, false))
     }
@@ -20,7 +20,7 @@ class RecentlyRecordAdapter(
         return items.size
     }
 
-    fun changeItems(items: List<Record>) {
+    fun changeItems(items: List<RecordWithCategory>) {
         this.items = items
         notifyDataSetChanged()
     }

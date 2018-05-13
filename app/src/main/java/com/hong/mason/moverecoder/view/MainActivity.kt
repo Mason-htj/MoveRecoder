@@ -17,8 +17,8 @@ import android.widget.Button
 import android.widget.TextView
 import com.hong.mason.moverecoder.R
 import com.hong.mason.moverecoder.common.ActionCodes
-import com.hong.mason.moverecoder.data.Category
-import com.hong.mason.moverecoder.data.Record
+import com.hong.mason.moverecoder.room.model.Category
+import com.hong.mason.moverecoder.room.model.Record
 import com.hong.mason.moverecoder.model.RecoderPref
 import com.hong.mason.moverecoder.room.AppDatabase
 import com.hong.mason.moverecoder.room.CategoryDao
@@ -78,10 +78,11 @@ class MainActivity : AppCompatActivity(), CategorySelectDialog.OnSelectCategoryL
 
     override fun onSelectCategory(category: Category) {
         if (category.id != null) {
-            recordDao.insert(Record(savedStartTime, savedArriveTime, savedArriveTime - savedStartTime, category.id!!, category.name))
+            recordDao.insert(Record(savedStartTime, savedArriveTime, savedArriveTime - savedStartTime, category.id!!))
         } else {
             val id = categoryDao.insert(Category(category.name))
-            recordDao.insert(Record(savedStartTime, savedArriveTime, savedArriveTime - savedStartTime, id, category.name))
+
+            recordDao.insert(Record(savedStartTime, savedArriveTime, savedArriveTime - savedStartTime, id))
         }
         updateRecordList()
         val intent = Intent(this, MovingService::class.java)
@@ -200,7 +201,7 @@ class MainActivity : AppCompatActivity(), CategorySelectDialog.OnSelectCategoryL
     }
 
     private fun updateRecordList() {
-        recyclerView.adapter = RecentlyRecordAdapter(recordDao.getAll())
+        recyclerView.adapter = RecentlyRecordAdapter(recordDao.getAllWithCategory())
         recyclerView.adapter.notifyDataSetChanged()
     }
 

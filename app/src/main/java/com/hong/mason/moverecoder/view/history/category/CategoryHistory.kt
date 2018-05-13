@@ -1,9 +1,9 @@
 package com.hong.mason.moverecoder.view.history.category
 
+import com.hong.mason.moverecoder.room.model.Category
+
 data class CategoryHistory(
-        val id: Long,
-        val name: String,
-        val totalTime: Long,
-        val totalCount: Int,
-        val averageTime: Float
+        val category: Category?,
+        val totalTime: Int,
+        val totalCount: Int
 )

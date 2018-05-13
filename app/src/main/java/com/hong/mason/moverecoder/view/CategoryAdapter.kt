@@ -4,7 +4,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.hong.mason.moverecoder.R
-import com.hong.mason.moverecoder.data.Category
+import com.hong.mason.moverecoder.room.model.Category
 
 class CategoryAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private var items: List<Category> = emptyList()

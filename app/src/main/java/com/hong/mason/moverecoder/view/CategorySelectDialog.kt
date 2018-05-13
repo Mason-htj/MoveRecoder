@@ -10,7 +10,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.View
 import com.hong.mason.moverecoder.base.BaseDialogFragment
 import com.hong.mason.moverecoder.R
-import com.hong.mason.moverecoder.data.Category
+import com.hong.mason.moverecoder.room.model.Category
 import com.hong.mason.moverecoder.room.AppDatabase
 import com.hong.mason.moverecoder.room.CategoryDao
 

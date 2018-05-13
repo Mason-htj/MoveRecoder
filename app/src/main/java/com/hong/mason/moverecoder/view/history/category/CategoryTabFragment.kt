@@ -22,14 +22,21 @@ class CategoryTabFragment : BaseTabFragment() {
     }
 
     override fun initView(view: View) {
-//        val database = Room.databaseBuilder(context, AppDatabase::class.java, "AppDatase")
-//                .allowMainThreadQueries()
-//                .build()
-//        recyclerView = view.findViewById(R.id.recycler_view)
-//        recyclerView.setHasFixedSize(true)
-//        recyclerView.layoutManager = LinearLayoutManager(context)
-//        recyclerView.adapter = adapter
-//        adapter.notifyDataSetChanged()
+        val database = Room.databaseBuilder(context, AppDatabase::class.java, "AppDatabase")
+                .allowMainThreadQueries()
+                .build()
+
+        adapter = CategoryHistoryAdapter(database.categoryDao()
+                .getAllWithRecord()
+                .map { CategoryHistory(
+                        it.category,
+                        it.record?.sumBy { it.duration.toInt() } ?: 0,
+                        it.record?.size ?: 0) })
+        recyclerView = view.findViewById(R.id.recycler_view)
+        recyclerView.setHasFixedSize(true)
+        recyclerView.layoutManager = LinearLayoutManager(context)
+        recyclerView.adapter = adapter
+        adapter.notifyDataSetChanged()
     }
 
     override fun initArguments(args: Bundle?) {

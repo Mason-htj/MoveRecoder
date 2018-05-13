@@ -4,7 +4,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.widget.TextView
 import com.hong.mason.moverecoder.R
-import com.hong.mason.moverecoder.data.Category
+import com.hong.mason.moverecoder.room.model.Category
 
 class CategoryViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     private val textName: TextView = itemView.findViewById(R.id.text_name)

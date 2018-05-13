@@ -4,7 +4,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.widget.TextView
 import com.hong.mason.moverecoder.R
-import com.hong.mason.moverecoder.data.Record
+import com.hong.mason.moverecoder.room.model.RecordWithCategory
 import com.hong.mason.moverecoder.util.TimeFormatUtils
 import java.text.DateFormat
 import java.util.*
@@ -16,10 +16,10 @@ class RecentlyRecordViewHolder(itemView: View) : RecyclerView.ViewHolder(itemVie
     private val textCategory: TextView = itemView.findViewById(R.id.text_category)
     private val formatter = DateFormat.getInstance()
 
-    fun bind(record: Record) {
-        textStartTime.text = formatter.format(Date(record.startTime))
-        textArriveTime.text = formatter.format(Date(record.arriveTime))
-        textDuration.text = TimeFormatUtils.getDurationString(record.duration)
-        textCategory.text = record.categoryName
+    fun bind(item: RecordWithCategory) {
+        textStartTime.text = formatter.format(Date(item.record?.startTime ?: 0))
+        textArriveTime.text = formatter.format(Date(item.record?.arriveTime ?: 0))
+        textDuration.text = TimeFormatUtils.getDurationString(item.record?.duration ?: 0)
+        textCategory.text = item.category?.get(0)?.name
     }
 }
