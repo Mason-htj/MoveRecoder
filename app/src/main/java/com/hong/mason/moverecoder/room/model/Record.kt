@@ -2,13 +2,15 @@ package com.hong.mason.moverecoder.room.model
 
 import android.arch.persistence.room.Entity
 import android.arch.persistence.room.ForeignKey
+import android.arch.persistence.room.Index
 import android.arch.persistence.room.PrimaryKey
 
 @Entity(
         foreignKeys = [ForeignKey(
                 entity = Category::class,
                 parentColumns = ["id"],
-                childColumns = ["category"])]
+                childColumns = ["category"])],
+        indices = [(Index("category"))]
 )
 data class Record(
         val startTime: Long,

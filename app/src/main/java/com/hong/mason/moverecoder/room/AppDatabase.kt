@@ -7,7 +7,8 @@ import com.hong.mason.moverecoder.room.model.Record
 
 @Database(
         entities = [(Record::class), (Category::class)],
-        version = 1
+        version = 1,
+        exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun recordDao(): RecordDao

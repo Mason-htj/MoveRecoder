@@ -1,15 +1,10 @@
 package com.hong.mason.moverecoder.room.model
 
-import android.arch.persistence.room.Embedded
-import android.arch.persistence.room.Relation
-
 data class RecordWithCategory(
-    @Embedded
-    var record: Record? = null,
-
-    @Relation(
-            parentColumn = "category",
-            entityColumn = "id"
-    )
-    var category: List<Category>? = null
+        var id: Long? = null,
+        val startTime: Long,
+        val arriveTime: Long,
+        val duration: Long,
+        val category: Long,
+        val categoryName: String
 )

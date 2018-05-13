@@ -17,9 +17,9 @@ class RecentlyRecordViewHolder(itemView: View) : RecyclerView.ViewHolder(itemVie
     private val formatter = DateFormat.getInstance()
 
     fun bind(item: RecordWithCategory) {
-        textStartTime.text = formatter.format(Date(item.record?.startTime ?: 0))
-        textArriveTime.text = formatter.format(Date(item.record?.arriveTime ?: 0))
-        textDuration.text = TimeFormatUtils.getDurationString(item.record?.duration ?: 0)
-        textCategory.text = item.category?.get(0)?.name
+        textStartTime.text = formatter.format(Date(item.startTime))
+        textArriveTime.text = formatter.format(Date(item.arriveTime))
+        textDuration.text = TimeFormatUtils.getDurationString(item.duration)
+        textCategory.text = item.categoryName
     }
 }

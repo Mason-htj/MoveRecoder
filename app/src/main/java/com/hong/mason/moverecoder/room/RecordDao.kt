@@ -11,7 +11,7 @@ interface RecordDao {
     @Query("SELECT * FROM Record")
     fun getAll(): List<Record>
 
-    @Query("SELECT * FROM Record INNER JOIN Category ON Record.category = Category.id")
+    @Query("SELECT Record.*, Category.name as categoryName FROM Record INNER JOIN Category ON Record.category = Category.id")
     fun getAllWithCategory(): List<RecordWithCategory>
 
     @Insert

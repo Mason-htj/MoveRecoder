@@ -11,7 +11,7 @@ interface CategoryDao {
     @Query("SELECT * FROM Category")
     fun getAll(): List<Category>
 
-    @Query("SELECT * FROM Category INNER JOIN Record ON Category.id = Record.category")
+    @Query("SELECT Category.*, COUNT(Category.id) as totalCount, SUM(Record.duration) as totalTime FROM Category INNER JOIN Record ON Category.id = Record.category GROUP BY Category.id")
     fun getAllWithRecord(): List<CategoryWithRecord>
 
     @Insert

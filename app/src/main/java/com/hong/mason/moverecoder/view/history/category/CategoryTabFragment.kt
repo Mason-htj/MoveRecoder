@@ -27,11 +27,7 @@ class CategoryTabFragment : BaseTabFragment() {
                 .build()
 
         adapter = CategoryHistoryAdapter(database.categoryDao()
-                .getAllWithRecord()
-                .map { CategoryHistory(
-                        it.category,
-                        it.record?.sumBy { it.duration.toInt() } ?: 0,
-                        it.record?.size ?: 0) })
+                .getAllWithRecord())
         recyclerView = view.findViewById(R.id.recycler_view)
         recyclerView.setHasFixedSize(true)
         recyclerView.layoutManager = LinearLayoutManager(context)
