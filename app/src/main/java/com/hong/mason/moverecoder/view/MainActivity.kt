@@ -1,5 +1,6 @@
 package com.hong.mason.moverecoder.view
 
+import android.arch.persistence.room.Room
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -14,11 +15,14 @@ import android.view.Gravity
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
-import com.hong.mason.moverecoder.model.DatabaseHelper
 import com.hong.mason.moverecoder.R
 import com.hong.mason.moverecoder.common.ActionCodes
 import com.hong.mason.moverecoder.data.Category
+import com.hong.mason.moverecoder.data.Record
 import com.hong.mason.moverecoder.model.RecoderPref
+import com.hong.mason.moverecoder.room.AppDatabase
+import com.hong.mason.moverecoder.room.CategoryDao
+import com.hong.mason.moverecoder.room.RecordDao
 import com.hong.mason.moverecoder.service.MovingService
 import com.hong.mason.moverecoder.view.history.HistoryActivity
 import java.text.DateFormat
@@ -35,7 +39,8 @@ class MainActivity : AppCompatActivity(), CategorySelectDialog.OnSelectCategoryL
     private lateinit var recyclerView: RecyclerView
 
     private var mBinder: MovingService.LocalBinder? = null
-    private lateinit var database: DatabaseHelper
+    private lateinit var recordDao: RecordDao
+    private lateinit var categoryDao: CategoryDao
     private lateinit var recoderPref: RecoderPref
     private val formatter = DateFormat.getInstance()
 
@@ -72,11 +77,11 @@ class MainActivity : AppCompatActivity(), CategorySelectDialog.OnSelectCategoryL
     }
 
     override fun onSelectCategory(category: Category) {
-        if (category.id != -1L) {
-            database.insertRecord(savedStartTime, savedArriveTime, category.id)
+        if (category.id != null) {
+            recordDao.insert(Record(savedStartTime, savedArriveTime, savedArriveTime - savedStartTime, category.id!!, category.name))
         } else {
-            val id = database.insertCategory(category.name)
-            database.insertRecord(savedStartTime, savedArriveTime, id)
+            val id = categoryDao.insert(Category(category.name))
+            recordDao.insert(Record(savedStartTime, savedArriveTime, savedArriveTime - savedStartTime, id, category.name))
         }
         updateRecordList()
         val intent = Intent(this, MovingService::class.java)
@@ -113,7 +118,15 @@ class MainActivity : AppCompatActivity(), CategorySelectDialog.OnSelectCategoryL
     }
 
     private fun initVariable() {
-        database = DatabaseHelper(this)
+        val appDatabase = Room.databaseBuilder(
+                this,
+                AppDatabase::class.java,
+                "AppDatabase")
+                .allowMainThreadQueries()
+                .build()
+
+        recordDao = appDatabase.recordDao()
+        categoryDao = appDatabase.categoryDao()
         recoderPref = RecoderPref(this)
 
         buttonStart = findViewById(R.id.button_start)
@@ -187,7 +200,7 @@ class MainActivity : AppCompatActivity(), CategorySelectDialog.OnSelectCategoryL
     }
 
     private fun updateRecordList() {
-        recyclerView.adapter = RecentlyRecordAdapter(database.getAllRecords())
+        recyclerView.adapter = RecentlyRecordAdapter(recordDao.getAll())
         recyclerView.adapter.notifyDataSetChanged()
     }
 

@@ -2,16 +2,17 @@ package com.hong.mason.moverecoder.view
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
+import android.arch.persistence.room.Room
 import android.content.Context
 import android.os.Bundle
-import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import com.hong.mason.moverecoder.base.BaseDialogFragment
-import com.hong.mason.moverecoder.model.DatabaseHelper
 import com.hong.mason.moverecoder.R
 import com.hong.mason.moverecoder.data.Category
+import com.hong.mason.moverecoder.room.AppDatabase
+import com.hong.mason.moverecoder.room.CategoryDao
 
 class CategorySelectDialog : BaseDialogFragment() {
     private lateinit var containerContent: View
@@ -22,6 +23,7 @@ class CategorySelectDialog : BaseDialogFragment() {
     private var onSelectCategoryListener: OnSelectCategoryListener? = null
     private val adapter = CategoryAdapter()
     private lateinit var categories: List<Category>
+    private lateinit var categoryDao: CategoryDao
 
     interface OnSelectCategoryListener {
         fun onSelectCategory(category: Category)
@@ -36,8 +38,11 @@ class CategorySelectDialog : BaseDialogFragment() {
 
     override fun initArguments(args: Bundle) {
         isCancelable = false
-        val database = DatabaseHelper(context)
-        categories = database.getAllCategories()
+        val database = Room.databaseBuilder(context, AppDatabase::class.java, "AppDatabase")
+                .allowMainThreadQueries()
+                .build()
+        categoryDao = database.categoryDao()
+        categories = categoryDao.getAll()
     }
 
     override fun initView(view: View) {

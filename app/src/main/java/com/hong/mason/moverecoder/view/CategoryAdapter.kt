@@ -15,7 +15,7 @@ class CategoryAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         return if (selected < items.size) {
             items[selected]
         } else {
-            Category(-1, otherName)
+            Category(otherName)
         }
     }
 

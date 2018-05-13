@@ -1,5 +1,6 @@
 package com.hong.mason.moverecoder.view.history
 
+import android.arch.persistence.room.Room
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -9,13 +10,14 @@ import android.view.MenuItem
 import android.view.View
 import com.hong.mason.moverecoder.R
 import com.hong.mason.moverecoder.base.BaseTabFragment
-import com.hong.mason.moverecoder.model.DatabaseHelper
+import com.hong.mason.moverecoder.room.AppDatabase
+import com.hong.mason.moverecoder.room.RecordDao
 import com.hong.mason.moverecoder.view.RecentlyRecordAdapter
 
 class RecordsTabFragment : BaseTabFragment() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: RecentlyRecordAdapter
-    private lateinit var database: DatabaseHelper
+    private lateinit var recordDao: RecordDao
 
     override fun getTitle(): String {
         return "Records"
@@ -31,7 +33,7 @@ class RecordsTabFragment : BaseTabFragment() {
     }
 
     override fun initView(view: View) {
-        adapter = RecentlyRecordAdapter(database.getAllRecords())
+        adapter = RecentlyRecordAdapter(recordDao.getAll())
         recyclerView = view.findViewById(R.id.recycler_view)
         recyclerView.setHasFixedSize(true)
         recyclerView.layoutManager = LinearLayoutManager(context)
@@ -39,7 +41,14 @@ class RecordsTabFragment : BaseTabFragment() {
     }
 
     override fun initArguments(args: Bundle?) {
-        database = DatabaseHelper(context)
+        val appDatabase = Room.databaseBuilder(
+                context,
+                AppDatabase::class.java,
+                "AppDatabase")
+                .allowMainThreadQueries()
+                .build()
+
+        recordDao = appDatabase.recordDao()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
@@ -50,7 +59,7 @@ class RecordsTabFragment : BaseTabFragment() {
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when (item?.itemId ?: -1) {
             R.id.action_clear -> {
-                database.clearReocrds()
+                recordDao.clear()
                 adapter.changeItems(emptyList())
                 return true
             }
